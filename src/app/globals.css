@@ -1,26 +1,102 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fefcf9;
+  --foreground: #3d3d3d;
+  --card: #ffffff;
+  --card-foreground: #3d3d3d;
+  --primary: #f8a5c2;
+  --primary-foreground: #ffffff;
+  --secondary: #c4e1f6;
+  --secondary-foreground: #3d3d3d;
+  --muted: #f5f0eb;
+  --muted-foreground: #8a8a8a;
+  --accent: #b5ead7;
+  --accent-foreground: #3d3d3d;
+  --border: #f0e6dc;
+  --ring: #f8a5c2;
+  --radius: 1rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --radius: var(--radius);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e0d6cc;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d0c6bc;
+}
+
+/* Image loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.image-loading {
+  background: linear-gradient(
+    90deg,
+    #f5f0eb 25%,
+    #faf7f4 50%,
+    #f5f0eb 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Tag colors */
+.tag-学习 { background-color: #dbeafe; color: #2563eb; }
+.tag-爱豆 { background-color: #fce7f3; color: #db2777; }
+.tag-日常 { background-color: #fef3c7; color: #d97706; }
+.tag-美食 { background-color: #dcfce7; color: #16a34a; }
+.tag-碎碎念 { background-color: #f3e8ff; color: #9333ea; }
+.tag-出游 { background-color: #cffafe; color: #0891b2; }
