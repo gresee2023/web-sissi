@@ -21,9 +21,11 @@ export function PostCard({ post }: PostCardProps) {
       </div>
 
       {/* Image carousel */}
-      <div className="px-4">
-        <ImageCarousel images={post.images} alt={post.content.slice(0, 20)} />
-      </div>
+      {post.imageUrls.length > 0 && (
+        <div className="px-4">
+          <ImageCarousel images={post.imageUrls} alt={post.content.slice(0, 20)} />
+        </div>
+      )}
 
       {/* Content */}
       <div className="p-4 pt-3 space-y-3">
@@ -32,19 +34,21 @@ export function PostCard({ post }: PostCardProps) {
         </p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-2">
-          {post.tags.map((tag) => (
-            <span
-              key={tag}
-              className={cn(
-                "px-3 py-1 rounded-full text-xs font-medium",
-                `tag-${tag}`
-              )}
-            >
-              #{tag}
-            </span>
-          ))}
-        </div>
+        {post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className={cn(
+                  "px-3 py-1 rounded-full text-xs font-medium",
+                  `tag-${tag}`
+                )}
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </article>
   );
