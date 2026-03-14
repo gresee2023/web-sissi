@@ -16,6 +16,7 @@ export const TAGS: Tag[] = [
 
 export type WishStatus = "pending" | "planned" | "completed";
 export type Role = "daughter" | "dad" | "mom";
+export type Mood = "sunny" | "cloudy" | "rainy" | "lightning";
 
 export interface Post {
   id: string;
@@ -25,5 +26,6 @@ export interface Post {
   wishStatus: WishStatus | null;
   wishAssignedBy: string | null;
   reactions: unknown[];
+  mood: Mood | null;
   createdAt: string;
 }

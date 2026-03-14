@@ -6,7 +6,7 @@ import imageCompression from "browser-image-compression";
 import { ImageUploader } from "./ImageUploader";
 import { TagSelector } from "./TagSelector";
 import { cn } from "@/lib/utils";
-import type { Post } from "@/data/mock";
+import type { Post, Mood } from "@/data/mock";
 
 const MAX_LENGTH = 300;
 const WARN_THRESHOLD = 270;
@@ -17,6 +17,13 @@ const COMPRESSION_OPTIONS = {
   initialQuality: 0.8,
   useWebWorker: true,
 };
+
+const MOOD_OPTIONS: { value: Mood; emoji: string }[] = [
+  { value: "sunny", emoji: "\u2600\ufe0f" },
+  { value: "cloudy", emoji: "\u2601\ufe0f" },
+  { value: "rainy", emoji: "\ud83c\udf27\ufe0f" },
+  { value: "lightning", emoji: "\u26a1" },
+];
 
 interface PostFormProps {
   onPublished: () => void;
@@ -32,6 +39,7 @@ export function PostForm({ onPublished, editingPost, onCancelEdit, showWishToggl
   const [content, setContent] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isWish, setIsWish] = useState(false);
+  const [mood, setMood] = useState<Mood | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -47,6 +55,7 @@ export function PostForm({ onPublished, editingPost, onCancelEdit, showWishToggl
       setImages([]);
       setRemovedImageUrls([]);
       setIsWish(!!editingPost.wishStatus);
+      setMood(editingPost.mood ?? null);
       // Adjust textarea height after content is set
       setTimeout(() => adjustTextareaHeight(), 0);
     } else {
@@ -57,6 +66,7 @@ export function PostForm({ onPublished, editingPost, onCancelEdit, showWishToggl
       setImages([]);
       setRemovedImageUrls([]);
       setIsWish(false);
+      setMood(null);
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
@@ -150,6 +160,7 @@ export function PostForm({ onPublished, editingPost, onCancelEdit, showWishToggl
             imageUrls: newImageUrls,
             tags: selectedTags,
             ...(isWish ? { wishStatus: "pending" } : {}),
+            ...(mood ? { mood } : {}),
           }),
         });
 
@@ -163,6 +174,7 @@ export function PostForm({ onPublished, editingPost, onCancelEdit, showWishToggl
       setContent("");
       setSelectedTags([]);
       setIsWish(false);
+      setMood(null);
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
@@ -174,7 +186,7 @@ export function PostForm({ onPublished, editingPost, onCancelEdit, showWishToggl
     } finally {
       setIsSubmitting(false);
     }
-  }, [content, images, selectedTags, isWish, isSubmitting, isEditing, editingPost, existingImageUrls, removedImageUrls, onPublished]);
+  }, [content, images, selectedTags, isWish, mood, isSubmitting, isEditing, editingPost, existingImageUrls, removedImageUrls, onPublished]);
 
   const canSubmit = content.trim().length > 0 && !isSubmitting;
 
@@ -262,6 +274,30 @@ export function PostForm({ onPublished, editingPost, onCancelEdit, showWishToggl
           标签
         </label>
         <TagSelector selectedTags={selectedTags} onChange={setSelectedTags} />
+      </div>
+
+      {/* Mood selector */}
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-2">
+          此刻心情（可选）
+        </label>
+        <div className="flex gap-2">
+          {MOOD_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setMood(mood === opt.value ? null : opt.value)}
+              className={cn(
+                "w-11 h-11 rounded-xl text-xl flex items-center justify-center transition-all duration-150",
+                mood === opt.value
+                  ? "bg-primary/15 ring-2 ring-primary/50 scale-110"
+                  : "bg-muted/50 hover:bg-muted active:scale-95"
+              )}
+            >
+              {opt.emoji}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Wish toggle (daughter only) */}

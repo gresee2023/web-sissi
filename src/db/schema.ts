@@ -8,5 +8,6 @@ export const posts = pgTable("posts", {
   wishStatus: varchar("wish_status", { length: 20 }),
   wishAssignedBy: varchar("wish_assigned_by", { length: 20 }),
   reactions: jsonb("reactions").notNull().default([]),
+  mood: varchar("mood", { length: 20 }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });

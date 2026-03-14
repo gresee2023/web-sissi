@@ -22,7 +22,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { content, imageUrls, tags, wishStatus } = await request.json();
+    const { content, imageUrls, tags, wishStatus, mood } = await request.json();
 
     if (!content || typeof content !== "string" || !content.trim()) {
       return NextResponse.json(
@@ -31,6 +31,8 @@ export async function POST(request: Request) {
       );
     }
 
+    const validMoods = ["sunny", "cloudy", "rainy", "lightning"];
+
     const [newPost] = await db
       .insert(posts)
       .values({
@@ -38,6 +40,7 @@ export async function POST(request: Request) {
         imageUrls: Array.isArray(imageUrls) ? imageUrls : [],
         tags: Array.isArray(tags) ? tags : [],
         wishStatus: wishStatus === "pending" ? "pending" : null,
+        mood: validMoods.includes(mood) ? mood : null,
       })
       .returning();
 
