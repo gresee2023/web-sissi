@@ -288,7 +288,7 @@ export function PostForm({ onPublished, editingPost, onCancelEdit, showWishToggl
               type="button"
               onClick={() => setMood(mood === opt.value ? null : opt.value)}
               className={cn(
-                "w-11 h-11 rounded-xl text-xl flex items-center justify-center transition-all duration-150",
+                "flex-1 h-11 rounded-xl text-xl flex items-center justify-center transition-all duration-150",
                 mood === opt.value
                   ? "bg-primary/15 ring-2 ring-primary/50 scale-110"
                   : "bg-muted/50 hover:bg-muted active:scale-95"
