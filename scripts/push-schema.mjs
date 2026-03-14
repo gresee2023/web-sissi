@@ -14,6 +14,12 @@ async function main() {
     )
   `;
   console.log("Done! posts table created.");
+
+  console.log("Adding wish_status, wish_assigned_by, and reactions columns...");
+  await sql`ALTER TABLE "posts" ADD COLUMN IF NOT EXISTS "wish_status" varchar(20)`;
+  await sql`ALTER TABLE "posts" ADD COLUMN IF NOT EXISTS "wish_assigned_by" varchar(20)`;
+  await sql`ALTER TABLE "posts" ADD COLUMN IF NOT EXISTS "reactions" jsonb NOT NULL DEFAULT '[]'`;
+  console.log("Done! New columns added.");
 }
 
 main().catch(console.error);

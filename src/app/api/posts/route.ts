@@ -22,7 +22,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { content, imageUrls, tags } = await request.json();
+    const { content, imageUrls, tags, wishStatus } = await request.json();
 
     if (!content || typeof content !== "string" || !content.trim()) {
       return NextResponse.json(
@@ -37,6 +37,7 @@ export async function POST(request: Request) {
         content: content.trim(),
         imageUrls: Array.isArray(imageUrls) ? imageUrls : [],
         tags: Array.isArray(tags) ? tags : [],
+        wishStatus: wishStatus === "pending" ? "pending" : null,
       })
       .returning();
 

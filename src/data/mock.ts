@@ -14,10 +14,16 @@ export const TAGS: Tag[] = [
   { id: "travel", name: "出游", color: "bg-cyan-100 text-cyan-600" },
 ];
 
+export type WishStatus = "pending" | "planned" | "completed";
+export type Role = "daughter" | "dad" | "mom";
+
 export interface Post {
   id: string;
   content: string;
   imageUrls: string[];
   tags: string[];
+  wishStatus: WishStatus | null;
+  wishAssignedBy: string | null;
+  reactions: unknown[];
   createdAt: string;
 }

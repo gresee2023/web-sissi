@@ -130,3 +130,82 @@ html {
 .animate-shake {
   animation: shake 0.4s ease-in-out;
 }
+
+/* ── Stamp-style Wish Coupon Card ── */
+
+/*
+ * The stamp perforation effect uses CSS mask-image with radial-gradient.
+ * Four layers of repeating half-circles are intersected to punch holes
+ * along all four edges simultaneously.
+ *
+ * --perf-r : radius of each perforation hole
+ * --perf-s : spacing (repeat unit) between holes
+ */
+.stamp-card {
+  --perf-r: 5px;
+  --perf-s: 18px;
+
+  -webkit-mask-image:
+    /* top row of holes */
+    radial-gradient(circle var(--perf-r) at calc(var(--perf-s) / 2) 0, transparent 98%, black),
+    /* bottom row of holes */
+    radial-gradient(circle var(--perf-r) at calc(var(--perf-s) / 2) 100%, transparent 98%, black),
+    /* left column of holes */
+    radial-gradient(circle var(--perf-r) at 0 calc(var(--perf-s) / 2), transparent 98%, black),
+    /* right column of holes */
+    radial-gradient(circle var(--perf-r) at 100% calc(var(--perf-s) / 2), transparent 98%, black);
+
+  -webkit-mask-size:
+    var(--perf-s) 100%,
+    var(--perf-s) 100%,
+    100% var(--perf-s),
+    100% var(--perf-s);
+
+  -webkit-mask-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  -webkit-mask-position: 0 0, 0 100%, 0 0, 100% 0;
+
+  /* intersect = only show where ALL layers are opaque → cuts all edges */
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* Wrapper that adds drop-shadow (since mask clips box-shadow) */
+.stamp-shadow {
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+  transition: filter 0.3s;
+}
+.stamp-shadow:hover {
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.12));
+}
+
+/* Handwriting-style text using ZCOOL KuaiLe from Google Fonts */
+.wish-handwriting {
+  font-family: var(--font-cute), "ZCOOL KuaiLe", cursive, sans-serif;
+  font-weight: 400;
+}
+
+/* Sticker handwriting using Ma Shan Zheng – for reaction notes */
+.sticker-handwriting {
+  font-family: var(--font-handwrite), "Ma Shan Zheng", cursive, sans-serif;
+  font-weight: 400;
+}
+
+/* Torn paper edge effect for MomTornPaper stickers */
+.torn-paper-edge {
+  position: relative;
+  padding-bottom: 4px;
+}
+.torn-paper-edge::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: #fffbeb;
+  clip-path: polygon(
+    0% 0%, 4% 70%, 8% 10%, 12% 80%, 18% 20%, 22% 90%, 28% 0%,
+    32% 60%, 38% 15%, 42% 75%, 48% 5%, 52% 85%, 58% 20%, 62% 70%,
+    68% 10%, 72% 80%, 78% 0%, 82% 65%, 88% 15%, 92% 85%, 96% 25%, 100% 0%
+  );
+}

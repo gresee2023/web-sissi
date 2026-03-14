@@ -6,11 +6,18 @@ import { PinGate } from "@/components/PinGate";
 import { PostForm } from "@/components/PostForm";
 import { PostManager } from "@/components/PostManager";
 import { TagManager } from "@/components/TagManager";
+import { ParentTimeline } from "@/components/ParentTimeline";
 import { Toast } from "@/components/Toast";
-import type { Post } from "@/data/mock";
+import type { Post, Role } from "@/data/mock";
+
+const ROLE_LABELS: Record<Role, string> = {
+  daughter: "小公主",
+  dad: "老爸",
+  mom: "老妈",
+};
 
 export default function HoneyPage() {
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [role, setRole] = useState<Role | null>(null);
   const [toast, setToast] = useState({ visible: false, message: "" });
   const [posts, setPosts] = useState<Post[]>([]);
   const [postsLoading, setPostsLoading] = useState(false);
@@ -47,10 +54,13 @@ export default function HoneyPage() {
     }
   }, []);
 
-  const handleUnlock = useCallback(() => {
-    setIsUnlocked(true);
-    fetchPosts();
-  }, [fetchPosts]);
+  const handleUnlock = useCallback(
+    (r: Role) => {
+      setRole(r);
+      fetchPosts();
+    },
+    [fetchPosts]
+  );
 
   const handlePublished = useCallback(() => {
     showToast(editingPost ? "修改已保存！" : "发布成功！");
@@ -60,7 +70,6 @@ export default function HoneyPage() {
 
   const handleEdit = useCallback((post: Post) => {
     setEditingPost(post);
-    // Scroll to form
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
@@ -72,58 +81,89 @@ export default function HoneyPage() {
     fetchPosts();
   }, [fetchPosts]);
 
+  const isDaughter = role === "daughter";
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
       <main className="max-w-lg mx-auto px-4 py-6">
-        {!isUnlocked ? (
+        {!role ? (
           <PinGate onSuccess={handleUnlock} />
         ) : (
           <div className="space-y-8">
-            {/* Publishing / Editing Form */}
-            <section ref={formRef}>
-              <h2 className="text-base font-semibold text-foreground mb-4">
-                {editingPost ? "编辑内容" : "发布新内容"}
-              </h2>
-              <PostForm
-                onPublished={handlePublished}
-                editingPost={editingPost}
-                onCancelEdit={handleCancelEdit}
-              />
-            </section>
+            {/* Role indicator */}
+            <div className="text-center">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                {ROLE_LABELS[role]}模式
+              </span>
+            </div>
 
-            {/* Divider */}
-            <div className="border-t border-border" />
+            {/* ── Daughter view: full publishing + management ── */}
+            {isDaughter && (
+              <>
+                {/* Publishing / Editing Form */}
+                <section ref={formRef}>
+                  <h2 className="text-base font-semibold text-foreground mb-4">
+                    {editingPost ? "编辑内容" : "发布新内容"}
+                  </h2>
+                  <PostForm
+                    onPublished={handlePublished}
+                    editingPost={editingPost}
+                    onCancelEdit={handleCancelEdit}
+                    showWishToggle
+                  />
+                </section>
 
-            {/* Tag Management */}
-            <section>
-              <h2 className="text-base font-semibold text-foreground mb-4">
-                标签管理
-              </h2>
-              <TagManager
-                posts={posts}
-                onTagDeleted={fetchPosts}
-                showToast={showToast}
-              />
-            </section>
+                {/* Divider */}
+                <div className="border-t border-border" />
 
-            {/* Divider */}
-            <div className="border-t border-border" />
+                {/* Tag Management */}
+                <section>
+                  <h2 className="text-base font-semibold text-foreground mb-4">
+                    标签管理
+                  </h2>
+                  <TagManager
+                    posts={posts}
+                    onTagDeleted={fetchPosts}
+                    showToast={showToast}
+                  />
+                </section>
 
-            {/* Post Management List */}
-            <section>
-              <h2 className="text-base font-semibold text-foreground mb-4">
-                内容管理
-              </h2>
-              <PostManager
-                posts={posts}
-                loading={postsLoading}
-                onEdit={handleEdit}
-                onDeleted={handleDeleted}
-                showToast={showToast}
-              />
-            </section>
+                {/* Divider */}
+                <div className="border-t border-border" />
+
+                {/* Post Management List */}
+                <section>
+                  <h2 className="text-base font-semibold text-foreground mb-4">
+                    内容管理
+                  </h2>
+                  <PostManager
+                    posts={posts}
+                    loading={postsLoading}
+                    onEdit={handleEdit}
+                    onDeleted={handleDeleted}
+                    showToast={showToast}
+                  />
+                </section>
+              </>
+            )}
+
+            {/* ── Parent view: read-only timeline with wish actions ── */}
+            {!isDaughter && (
+              <section>
+                <h2 className="text-base font-semibold text-foreground mb-4">
+                  所有内容
+                </h2>
+                <ParentTimeline
+                  posts={posts}
+                  loading={postsLoading}
+                  role={role!}
+                  onWishUpdated={fetchPosts}
+                  showToast={showToast}
+                />
+              </section>
+            )}
           </div>
         )}
       </main>

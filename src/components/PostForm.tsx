@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Send, Loader2, Save } from "lucide-react";
+import { Send, Loader2, Save, Star } from "lucide-react";
 import imageCompression from "browser-image-compression";
 import { ImageUploader } from "./ImageUploader";
 import { TagSelector } from "./TagSelector";
@@ -22,14 +22,16 @@ interface PostFormProps {
   onPublished: () => void;
   editingPost?: Post | null;
   onCancelEdit?: () => void;
+  showWishToggle?: boolean;
 }
 
-export function PostForm({ onPublished, editingPost, onCancelEdit }: PostFormProps) {
+export function PostForm({ onPublished, editingPost, onCancelEdit, showWishToggle = false }: PostFormProps) {
   const [images, setImages] = useState<File[]>([]);
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
   const [removedImageUrls, setRemovedImageUrls] = useState<string[]>([]);
   const [content, setContent] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isWish, setIsWish] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -44,6 +46,7 @@ export function PostForm({ onPublished, editingPost, onCancelEdit }: PostFormPro
       setExistingImageUrls([...editingPost.imageUrls]);
       setImages([]);
       setRemovedImageUrls([]);
+      setIsWish(!!editingPost.wishStatus);
       // Adjust textarea height after content is set
       setTimeout(() => adjustTextareaHeight(), 0);
     } else {
@@ -53,6 +56,7 @@ export function PostForm({ onPublished, editingPost, onCancelEdit }: PostFormPro
       setExistingImageUrls([]);
       setImages([]);
       setRemovedImageUrls([]);
+      setIsWish(false);
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
@@ -145,6 +149,7 @@ export function PostForm({ onPublished, editingPost, onCancelEdit }: PostFormPro
             content: content.trim(),
             imageUrls: newImageUrls,
             tags: selectedTags,
+            ...(isWish ? { wishStatus: "pending" } : {}),
           }),
         });
 
@@ -157,6 +162,7 @@ export function PostForm({ onPublished, editingPost, onCancelEdit }: PostFormPro
       setRemovedImageUrls([]);
       setContent("");
       setSelectedTags([]);
+      setIsWish(false);
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
@@ -168,7 +174,7 @@ export function PostForm({ onPublished, editingPost, onCancelEdit }: PostFormPro
     } finally {
       setIsSubmitting(false);
     }
-  }, [content, images, selectedTags, isSubmitting, isEditing, editingPost, existingImageUrls, removedImageUrls, onPublished]);
+  }, [content, images, selectedTags, isWish, isSubmitting, isEditing, editingPost, existingImageUrls, removedImageUrls, onPublished]);
 
   const canSubmit = content.trim().length > 0 && !isSubmitting;
 
@@ -257,6 +263,48 @@ export function PostForm({ onPublished, editingPost, onCancelEdit }: PostFormPro
         </label>
         <TagSelector selectedTags={selectedTags} onChange={setSelectedTags} />
       </div>
+
+      {/* Wish toggle (daughter only) */}
+      {showWishToggle && !isEditing && (
+        <button
+          type="button"
+          onClick={() => setIsWish((v) => !v)}
+          className={cn(
+            "w-full flex items-center gap-3 px-4 py-3 rounded-2xl border-2 transition-all duration-200",
+            isWish
+              ? "border-amber-300 bg-amber-50"
+              : "border-border bg-background hover:border-muted-foreground/30"
+          )}
+        >
+          <Star
+            className={cn(
+              "w-5 h-5 shrink-0 transition-colors",
+              isWish ? "text-amber-500 fill-amber-400" : "text-muted-foreground/50"
+            )}
+          />
+          <span
+            className={cn(
+              "text-sm font-medium transition-colors",
+              isWish ? "text-amber-700" : "text-muted-foreground"
+            )}
+          >
+            这是一个周末心愿
+          </span>
+          <div
+            className={cn(
+              "ml-auto w-10 h-6 rounded-full p-0.5 transition-colors duration-200",
+              isWish ? "bg-amber-400" : "bg-muted"
+            )}
+          >
+            <div
+              className={cn(
+                "w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200",
+                isWish ? "translate-x-4" : "translate-x-0"
+              )}
+            />
+          </div>
+        </button>
+      )}
 
       {/* Submit button */}
       <button

@@ -3,9 +3,10 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Lock, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Role } from "@/data/mock";
 
 interface PinGateProps {
-  onSuccess: () => void;
+  onSuccess: (role: Role) => void;
 }
 
 export function PinGate({ onSuccess }: PinGateProps) {
@@ -34,7 +35,8 @@ export function PinGate({ onSuccess }: PinGateProps) {
       });
 
       if (res.ok) {
-        onSuccess();
+        const data = await res.json();
+        onSuccess(data.role);
       } else {
         setError("暗号不对哦，再想想~");
         setIsShaking(true);

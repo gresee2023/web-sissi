@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, ZCOOL_KuaiLe, Ma_Shan_Zheng } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -9,6 +9,18 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const zcoolKuaiLe = ZCOOL_KuaiLe({
+  weight: "400",
+  variable: "--font-cute",
+  subsets: ["latin"],
+});
+
+const maShanZheng = Ma_Shan_Zheng({
+  weight: "400",
+  variable: "--font-handwrite",
   subsets: ["latin"],
 });
 
@@ -33,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${zcoolKuaiLe.variable} ${maShanZheng.variable} antialiased`}
       >
         {children}
       </body>
